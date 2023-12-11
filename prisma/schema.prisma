@@ -8,7 +8,7 @@ generator client {
 model Region {
   id          Int        @id @default(autoincrement())
   region_name String
-  region_slug String
+  region_slug String?
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
   provinces   Province[]
@@ -19,7 +19,7 @@ model Province {
   Region             Region   @relation(fields: [regionId], references: [id])
   regionId           Int
   province_name      String
-  province_name_slug String
+  province_name_slug String?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   foods              Food[]
@@ -28,7 +28,7 @@ model Province {
 model Category {
   id                 Int      @id @default(autoincrement())
   category_name      String
-  category_name_slug String
+  category_name_slug String?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   foods              Food[]
@@ -42,7 +42,7 @@ model Food {
   categoryId               Int
   image                    String
   food_name                String
-  food_name_slug           String
+  food_name_slug           String?
   description              String?
   cooking_time             String
   number_of_servings       Int
