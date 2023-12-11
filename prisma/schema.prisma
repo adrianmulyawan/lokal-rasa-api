@@ -5,6 +5,76 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Region {
+  id          Int        @id @default(autoincrement())
+  region_name String
+  region_slug String
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  provinces   Province[]
+}
+
+model Province {
+  id                 Int      @id @default(autoincrement())
+  Region             Region   @relation(fields: [regionId], references: [id])
+  regionId           Int
+  province_name      String
+  province_name_slug String
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  foods              Food[]
+}
+
+model Category {
+  id                 Int      @id @default(autoincrement())
+  category_name      String
+  category_name_slug String
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  foods              Food[]
+}
+
+model Food {
+  id                       Int          @id @default(autoincrement())
+  Province                 Province     @relation(fields: [provinceId], references: [id])
+  provinceId               Int
+  Category                 Category     @relation(fields: [categoryId], references: [id])
+  categoryId               Int
+  image                    String
+  food_name                String
+  food_name_slug           String
+  description              String?
+  cooking_time             String
+  number_of_servings       Int
+  cooking_difficulty_level String
+  url_video_recipe         String?
+  source_recipe            String
+  created_at               DateTime     @default(now())
+  updated_at               DateTime     @updatedAt
+  ingredients              Ingredient[]
+  steps                    Step[]
+}
+
+model Ingredient {
+  id              Int      @id @default(autoincrement())
+  Food            Food     @relation(fields: [foodId], references: [id])
+  foodId          Int
+  dose_ingredient Int
+  ingredient_name String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+model Step {
+  id         Int      @id @default(autoincrement())
+  Food       Food     @relation(fields: [foodId], references: [id])
+  foodId     Int
+  step_desc  String
+  step_image String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
