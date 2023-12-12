@@ -4,6 +4,7 @@ import 'http-errors';
 
 import RegionRoute from './routes/region.route';
 import ProvinceRoute from './routes/province.route';
+import CategoryRoute from './routes/category.route';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(RegionRoute);
 app.use(ProvinceRoute);
+app.use(CategoryRoute);
 
 app.use((req: Request, res: Response, next: Function) => {
   res.status(404).json({
