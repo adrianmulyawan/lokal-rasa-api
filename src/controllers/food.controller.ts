@@ -212,7 +212,10 @@ export const updateFoodRecipe = async (req: Request, res: Response) => {
     const imageName = req.file?.filename;
 
     if (req.file === undefined) {
-      const food = await prisma.food.create({
+      const food = await prisma.food.update({
+        where: {
+          id: recipe.id
+        },
         data: {
           provinceId: Number(provinceId) || recipe.provinceId,
           categoryId: Number(categoryId) || recipe.categoryId,
@@ -239,7 +242,10 @@ export const updateFoodRecipe = async (req: Request, res: Response) => {
       // > Hapus foto
       await fs.unlink(path.join(`public/${recipe.image}`));
 
-      const food = await prisma.food.create({
+      const food = await prisma.food.update({
+        where: {
+          id: recipe.id
+        },
         data: {
           provinceId: Number(provinceId) || recipe.provinceId,
           categoryId: Number(categoryId) || recipe.categoryId,
@@ -271,3 +277,46 @@ export const updateFoodRecipe = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteRecipe = async (req: Request, res: Response) => {
+  const { slug } = req.params;
+
+  try {
+    const recipe = await prisma.food.findFirst({
+      where: {
+        food_name_slug: slug
+      }
+    });
+
+    if (!recipe) {
+      return res.status(404).json({
+        status: "Failed",
+        statusCode: 404,
+        message: "Recipe Not Found"
+      });
+    }
+
+    // > Hapus foto
+    await fs.unlink(path.join(`public/${recipe.image}`));
+
+    await prisma.food.delete({
+      where: {
+        food_name_slug: slug,
+        id: recipe.id
+      }
+    });
+
+    return res.status(200).json({
+      status: "Success",
+      statusCode: 200,
+      message: `Success Delete Recipe: ${recipe.food_name}`
+    });
+
+  } catch (error: any) {
+    return res.status(400).json({
+      status: "Failed",
+      statusCode: 400,
+      message: `Something Error in updateFoodRecipe Controller ${error.message}`
+    });
+  }
+}
