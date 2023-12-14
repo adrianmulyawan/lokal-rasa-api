@@ -242,4 +242,44 @@ export const deleteProvince = async (req: Request, res: Response) => {
       message: `Something Error in deleteProvince Controller ${error.message}`
     });
   }
-}
+};
+
+export const provinceListRecipes = async (req: Request, res: Response) => {
+  const { from } = req.query;
+  
+  try {
+    const recipes = await prisma.province.findFirst({
+      where: {
+        province_name: {
+          contains: String(from),
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        foods: true
+      }
+    });
+
+    if (!recipes) {
+      return res.status(404).json({
+        status: "Failed",
+        statusCode: 404,
+        message: "Province Not Found!"
+      });
+    }
+
+    return res.status(200).json({
+      status: "Success",
+      statusCode: 200,
+      message: "List Food Recipe",
+      data: recipes.foods.length < 1 ? `Sorry, Recipes From "${from}" Province Are Not Yet Available!` : recipes.foods
+    });
+
+  } catch (error: any) {
+    return res.status(400).json({
+      status: "Failed",
+      statusCode: 400,
+      message: `Something Error in provinceListRecipes Controller ${error.message}`
+    });
+  }
+};
